@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { searchDistricts } from "../utils";
+import { useNavigate } from "react-router-dom";
 
-interface Props {
-  onSelect: (name: string) => void;
-}
-
-export const SearchBox = ({ onSelect }: Props) => {
+export const SearchBox = () => {
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   const results = searchDistricts(keyword);
 
@@ -24,8 +22,7 @@ export const SearchBox = ({ onSelect }: Props) => {
             <li
               key={item.raw}
               onClick={() => {
-                onSelect(item.raw);
-                setKeyword(item.display);
+                navigate(`/place/${encodeURIComponent(item.raw)}`);
               }}
             >
               {item.display}
