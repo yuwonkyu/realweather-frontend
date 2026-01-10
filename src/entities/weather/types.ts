@@ -1,6 +1,12 @@
-export interface Weather {
-  temp: number;
-  tempMin: number;
-  tempMax: number;
-  description: string;
+export interface WeatherResponse {
+  main: {
+    temp: number;
+    temp_min: number;
+    temp_max: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+  name: string;
 }
