@@ -1,7 +1,17 @@
-import { Home } from "../pages/Home";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+import { loadKakaoMap } from "./loadKakao";
 
-function App() {
-  return <Home />;
+export default function App() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    loadKakaoMap().then(() => {
+      setReady(true);
+    });
+  }, []);
+
+  if (!ready) return <div>Loading Kakao Map...</div>;
+
+  return <Outlet />;
 }
-
-export default App;

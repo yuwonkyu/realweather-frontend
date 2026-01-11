@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useWeather } from "@/entities/weather/useWeather";
-import { SearchBox } from "@/features/search/components/SearchBox";
+import { KakaoSearchBox } from "@/features/search/components/KakaoSearchBox";
+import { KakaoMap } from "@/features/map/ui/KakaoMap";
 
 export const Home = () => {
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
@@ -23,15 +24,13 @@ export const Home = () => {
 
   return (
     <div>
-      <SearchBox />
-      <div>
-        <h1>{data?.name}</h1>
-        <p>{data?.main.temp}℃</p>
-        <p>
-          {data?.main.temp_min}℃ / {data?.main.temp_max}℃
-        </p>
-        <p>{data?.weather[0].description}</p>
-      </div>
+      <KakaoSearchBox onSelect={(lat, lon) => setCoords({ lat, lon })} />
+      <KakaoMap lat={coords.lat} lon={coords.lon} />
+      <h1>{data?.name}</h1>
+      <p>{data?.main.temp}℃</p>
+      <p>
+        {data?.main.temp_min}℃ / {data?.main.temp_max}℃
+      </p>
     </div>
   );
 };
