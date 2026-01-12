@@ -9,11 +9,11 @@ export const KakaoMap = ({ lat, lon }: Props) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!window.kakao || !window.kakao.maps || !window.kakao.maps.load) return;
-    if (!mapRef.current) return;
+    if (!mapRef.current || !window.kakao) return;
 
-    window.kakao.maps.load(() => {
-      const kakao = window.kakao;
+    const kakao = window.kakao;
+
+    kakao.maps.load(() => {
       const center = new kakao.maps.LatLng(lat, lon);
 
       const map = new kakao.maps.Map(mapRef.current, {
@@ -28,5 +28,5 @@ export const KakaoMap = ({ lat, lon }: Props) => {
     });
   }, [lat, lon]);
 
-  return <div ref={mapRef} className="w-full h-auto rounded-lg" />;
+  return <div ref={mapRef} className="w-full h-24 rounded-lg" />;
 };
