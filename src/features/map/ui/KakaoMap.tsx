@@ -28,5 +28,5 @@ export const KakaoMap = ({ lat, lon }: Props) => {
     });
   }, [lat, lon]);
 
-  return <div ref={mapRef} className="w-full h-24 rounded-lg" />;
+  return <div ref={mapRef} className="w-full h-64 rounded-lg" />;
 };
