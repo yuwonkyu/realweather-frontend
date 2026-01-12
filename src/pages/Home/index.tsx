@@ -39,7 +39,7 @@ export const Home = () => {
     );
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50 ml-64">
+    <div className="min-h-screen p-6 bg-gray-50 ">
       <div className="max-w-2xl space-y-4">
         {/* 날씨 정보 박스 */}
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
