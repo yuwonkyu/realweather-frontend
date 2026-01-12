@@ -13,7 +13,7 @@ export const Layout = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen">
       <Outlet context={{ coords, setCoords }} />
       <FavoriteSidebar onSelect={(lat, lon) => setCoords({ lat, lon })} />
     </div>
