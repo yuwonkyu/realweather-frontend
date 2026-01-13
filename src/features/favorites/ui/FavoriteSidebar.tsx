@@ -5,9 +5,15 @@ interface Props {
   onSelect: (lat: number, lon: number) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
+  onResetHome: () => void;
 }
 
-export const FavoriteSidebar = ({ onSelect, open, setOpen }: Props) => {
+export const FavoriteSidebar = ({
+  onSelect,
+  open,
+  setOpen,
+  onResetHome,
+}: Props) => {
   const { favorites } = useFavoritesStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,7 +44,10 @@ export const FavoriteSidebar = ({ onSelect, open, setOpen }: Props) => {
         <div className="pt-4 px-3">
           {/* 홈 메뉴 */}
           <button
-            onClick={() => navigate("/")}
+            onClick={() => {
+              onResetHome();
+              navigate("/");
+            }}
             className={`w-full text-left px-3 py-2 rounded-md hover:bg-zinc-700 cursor-pointer transition-colors mb-2 ${
               location.pathname === "/" ? "bg-zinc-700" : "bg-zinc-800"
             }`}

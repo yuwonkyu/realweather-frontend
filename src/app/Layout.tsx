@@ -20,6 +20,7 @@ export const Layout = () => {
         onSelect={(lat, lon) => setCoords({ lat, lon })}
         open={sidebarOpen}
         setOpen={setSidebarOpen}
+        onResetHome={() => setCoords(null)}
       />
       <div
         className={`min-h-screen transition-all duration-300 ${
