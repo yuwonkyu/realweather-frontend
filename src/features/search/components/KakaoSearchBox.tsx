@@ -18,6 +18,7 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
           search(e.target.value);
         }}
         placeholder="장소를 검색하세요"
+        className="w-full p-2 border border-gray-300 rounded"
       />
 
       {results.length > 0 && (

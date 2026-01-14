@@ -17,14 +17,13 @@ export const Layout = () => {
   return (
     <div className="min-h-screen">
       <FavoriteSidebar
-        onSelect={(lat, lon) => setCoords({ lat, lon })}
         open={sidebarOpen}
         setOpen={setSidebarOpen}
         onResetHome={() => setCoords(null)}
       />
       <div
         className={`min-h-screen transition-all duration-300 ${
-          sidebarOpen ? "ml-64" : "ml-16"
+          sidebarOpen ? "ml-48" : "ml-12"
         }`}
       >
         <Outlet context={{ coords, setCoords, sidebarOpen }} />
