@@ -2,18 +2,12 @@ import { useFavoritesStore } from "../model/favoritesStore";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface Props {
-  onSelect: (lat: number, lon: number) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
   onResetHome: () => void;
 }
 
-export const FavoriteSidebar = ({
-  onSelect,
-  open,
-  setOpen,
-  onResetHome,
-}: Props) => {
+export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
   const { favorites } = useFavoritesStore();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,7 +15,7 @@ export const FavoriteSidebar = ({
   return (
     <aside
       className={`fixed top-0 left-0 h-screen bg-zinc-900 text-white z-50 shadow-xl overflow-y-auto transition-all duration-300 ${
-        open ? "w-64" : "w-16"
+        open ? "w-48" : "w-12"
       }`}
     >
       {/* 토글 버튼 */}
@@ -70,8 +64,7 @@ export const FavoriteSidebar = ({
                   <button
                     key={f.name}
                     onClick={() => {
-                      onSelect(f.lat, f.lon);
-                      navigate("/");
+                      navigate(`/weather/${f.lat}/${f.lon}`);
                     }}
                     className="w-full text-left px-3 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 cursor-pointer transition-colors text-sm"
                   >
