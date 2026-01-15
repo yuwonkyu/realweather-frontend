@@ -14,24 +14,20 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-screen bg-zinc-900 text-white z-50 shadow-xl overflow-y-auto transition-all duration-300 ${
-        open ? "w-48" : "w-12"
-      }`}
+      className={`fixed top-0 left-0 h-screen bg-zinc-900 text-white shadow-xl overflow-y-auto transition-all duration-300 ${
+        open ? "w-48" : "w-0"
+      } z-40`}
     >
-      {/* 토글 버튼 */}
-      <button
-        onClick={() => setOpen(!open)}
-        className={`mt-4 h-10 w-10 rounded-md bg-zinc-700 hover:bg-zinc-600 flex items-center justify-center transition-colors ${
-          open ? "ml-auto mr-4" : "mx-auto"
-        }`}
-        aria-label="사이드바 토글"
-      >
-        {open ? (
+      {/* 토글 버튼 - 사이드바 열렸을 때만 표시 */}
+      {open && (
+        <button
+          onClick={() => setOpen(false)}
+          className="mt-4 ml-auto mr-4 h-10 w-10 rounded-md bg-zinc-700 hover:bg-zinc-600 flex items-center justify-center transition-colors"
+          aria-label="사이드바 닫기"
+        >
           <img src="/close.svg" alt="닫기" className="size-6" />
-        ) : (
-          <img src="/favorite.svg" alt="메뉴" className="size-6" />
-        )}
-      </button>
+        </button>
+      )}
 
       {/* 사이드바 컨텐츠 - open일 때만 표시 */}
       {open && (
