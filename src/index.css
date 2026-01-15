@@ -13,3 +13,13 @@ body {
   background-color: #f9fafb;
   color: #111827;
 }
+
+/* 스크롤바 숨기기 (모바일/태블릿) */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
