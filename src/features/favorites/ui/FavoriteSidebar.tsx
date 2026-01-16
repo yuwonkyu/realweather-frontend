@@ -163,6 +163,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
                               handleCancelEdit();
                             }
                           }}
+                          maxLength={30}
                           className="w-full bg-zinc-700 text-white text-sm px-2 py-1 rounded border border-zinc-600 focus:outline-none focus:border-blue-500"
                           autoFocus
                         />

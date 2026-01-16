@@ -185,6 +185,7 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
               setFocusedIndex(-1);
             }
           }}
+          maxLength={30}
           placeholder="장소를 검색하세요"
           className="w-full p-2 pr-10 border border-gray-300 rounded"
         />
