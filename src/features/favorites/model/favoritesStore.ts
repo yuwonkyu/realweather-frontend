@@ -30,7 +30,7 @@ export const useFavoritesStore = create<FavoritesStore>()(
       rename: (id, newName) =>
         set((state) => ({
           favorites: state.favorites.map((fav) =>
-            fav.id === id ? { ...fav, name: newName } : fav
+            fav.id === id ? { ...fav, name: newName.slice(0, 20) } : fav
           ),
         })),
     }),

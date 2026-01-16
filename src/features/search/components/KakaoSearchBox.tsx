@@ -1,10 +1,23 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useKakaoSearch } from "@/entities/location/useKakaoSearch";
 import koreaDistricts from "@/shared/constants/korea_districts.json";
 
 interface Props {
   onSelect: (lat: number, lon: number, name: string) => void;
 }
+
+// 주요 도시 목록 (컴포넌트 외부로 이동하여 재생성 방지)
+const MAJOR_CITIES = [
+  { name: "서울", lat: 37.5665, lon: 126.978 },
+  { name: "부산", lat: 35.1796, lon: 129.0756 },
+  { name: "대구", lat: 35.8714, lon: 128.6014 },
+  { name: "인천", lat: 37.4563, lon: 126.7052 },
+  { name: "광주", lat: 35.1595, lon: 126.8526 },
+  { name: "대전", lat: 36.3504, lon: 127.3845 },
+  { name: "울산", lat: 35.5384, lon: 129.3114 },
+  { name: "제주", lat: 33.4996, lon: 126.5312 },
+  { name: "세종", lat: 36.48, lon: 127.289 },
+] as const;
 
 export const KakaoSearchBox = ({ onSelect }: Props) => {
   const [keyword, setKeyword] = useState("");
@@ -13,19 +26,6 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
     string | null
   >(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
-
-  // 주요 도시 목록
-  const majorCities = [
-    { name: "서울", lat: 37.5665, lon: 126.978 },
-    { name: "부산", lat: 35.1796, lon: 129.0756 },
-    { name: "대구", lat: 35.8714, lon: 128.6014 },
-    { name: "인천", lat: 37.4563, lon: 126.7052 },
-    { name: "광주", lat: 35.1595, lon: 126.8526 },
-    { name: "대전", lat: 36.3504, lon: 127.3845 },
-    { name: "울산", lat: 35.5384, lon: 129.3114 },
-    { name: "제주", lat: 33.4996, lon: 126.5312 },
-    { name: "세종", lat: 36.48, lon: 127.289 },
-  ];
 
   // 행정구역 데이터 필터링 (모든 레벨 포함)
   const administrativeRegions = useMemo(() => {
@@ -42,9 +42,77 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
     });
   }, []);
 
-  const handleSelectFirst = () => {
+  // 주요 도시 필터링 (검색어와 시작하는 도시들)
+  const filteredCities = useMemo(
+    () =>
+      keyword
+        ? MAJOR_CITIES.filter((city) =>
+            city.name.toLowerCase().includes(keyword.toLowerCase())
+          )
+        : [],
+    [keyword]
+  );
+
+  // 행정구역 필터링
+  const filteredAdminRegions = useMemo(
+    () =>
+      keyword
+        ? administrativeRegions
+            .filter(
+              (region) =>
+                region.searchText
+                  .toLowerCase()
+                  .includes(keyword.toLowerCase()) ||
+                region.displayName.toLowerCase().includes(keyword.toLowerCase())
+            )
+            .slice(0, 10) // 최대 10개만 표시
+        : [],
+    [keyword, administrativeRegions]
+  );
+
+  // 전체 결과 목록 (방향키 탐색용)
+  const allResults = useMemo(
+    () => [
+      ...filteredCities.map((city) => ({ type: "city" as const, data: city })),
+      ...filteredAdminRegions.map((region) => ({
+        type: "admin" as const,
+        data: region,
+      })),
+      ...results
+        .slice(0, 10)
+        .map((place) => ({ type: "place" as const, data: place })),
+    ],
+    [filteredCities, filteredAdminRegions, results]
+  );
+
+  // 결과가 있는지 확인
+  const hasResults = useMemo(
+    () =>
+      keyword &&
+      (filteredCities.length > 0 ||
+        filteredAdminRegions.length > 0 ||
+        results.length > 0),
+    [
+      keyword,
+      filteredCities.length,
+      filteredAdminRegions.length,
+      results.length,
+    ]
+  );
+
+  // 행정구역 선택 시 카카오 API로 좌표 검색
+  const handleAdminRegionSelect = useCallback(
+    (region: (typeof filteredAdminRegions)[0]) => {
+      const searchQuery = region.fullName.replace(/-/g, " ");
+      setWaitingForAdminRegion(region.displayName);
+      search(searchQuery);
+    },
+    [search]
+  );
+
+  const handleSelectFirst = useCallback(() => {
     // 주요 도시명과 정확히 일치하는지 확인
-    const matchedCity = majorCities.find(
+    const matchedCity = MAJOR_CITIES.find(
       (city) => city.name === keyword.trim()
     );
 
@@ -60,73 +128,16 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
       onSelect(parseFloat(first.y), parseFloat(first.x), first.place_name);
       setKeyword("");
     }
-  };
-
-  // 행정구역 선택 시 카카오 API로 좌표 검색
-  const handleAdminRegionSelect = (
-    region: (typeof filteredAdminRegions)[0]
-  ) => {
-    const searchQuery = region.fullName.replace(/-/g, " ");
-    setWaitingForAdminRegion(region.displayName);
-    search(searchQuery);
-  };
-
-  // 행정구역 검색 결과가 나오면 자동으로 첫 번째 항목 선택
-  useEffect(() => {
-    if (waitingForAdminRegion && results.length > 0) {
-      const first = results[0];
-      // 비동기로 처리하여 cascading render 방지
-      Promise.resolve().then(() => {
-        onSelect(
-          parseFloat(first.y),
-          parseFloat(first.x),
-          waitingForAdminRegion
-        );
-        setKeyword("");
-        setWaitingForAdminRegion(null);
-      });
-    }
-  }, [results, waitingForAdminRegion, onSelect]);
-
-  // 주요 도시 필터링 (검색어와 시작하는 도시들)
-  const filteredCities = keyword
-    ? majorCities.filter((city) =>
-        city.name.toLowerCase().includes(keyword.toLowerCase())
-      )
-    : [];
-
-  // 행정구역 필터링
-  const filteredAdminRegions = keyword
-    ? administrativeRegions
-        .filter(
-          (region) =>
-            region.searchText.toLowerCase().includes(keyword.toLowerCase()) ||
-            region.displayName.toLowerCase().includes(keyword.toLowerCase())
-        )
-        .slice(0, 10) // 최대 10개만 표시
-    : [];
-
-  // 결과가 있는지 확인
-  const hasResults =
-    keyword &&
-    (filteredCities.length > 0 ||
-      filteredAdminRegions.length > 0 ||
-      results.length > 0);
-
-  // 전체 결과 목록 (방향키 탐색용)
-  const allResults = [
-    ...filteredCities.map((city) => ({ type: "city" as const, data: city })),
-    ...filteredAdminRegions.map((region) => ({
-      type: "admin" as const,
-      data: region,
-    })),
-    ...results
-      .slice(0, 10)
-      .map((place) => ({ type: "place" as const, data: place })),
-  ];
+  }, [
+    keyword,
+    filteredAdminRegions,
+    results,
+    onSelect,
+    handleAdminRegionSelect,
+  ]);
 
   // 포커스된 항목 선택
-  const selectFocusedItem = () => {
+  const selectFocusedItem = useCallback(() => {
     if (focusedIndex >= 0 && focusedIndex < allResults.length) {
       const item = allResults[focusedIndex];
       if (item.type === "city") {
@@ -149,7 +160,30 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
       // 포커스가 없으면 기존 로직 (첫 번째 항목)
       handleSelectFirst();
     }
-  };
+  }, [
+    focusedIndex,
+    allResults,
+    onSelect,
+    handleAdminRegionSelect,
+    handleSelectFirst,
+  ]);
+
+  // 행정구역 검색 결과가 나오면 자동으로 첫 번째 항목 선택
+  useEffect(() => {
+    if (waitingForAdminRegion && results.length > 0) {
+      const first = results[0];
+      // 비동기로 처리하여 cascading render 방지
+      Promise.resolve().then(() => {
+        onSelect(
+          parseFloat(first.y),
+          parseFloat(first.x),
+          waitingForAdminRegion
+        );
+        setKeyword("");
+        setWaitingForAdminRegion(null);
+      });
+    }
+  }, [results, waitingForAdminRegion, onSelect]);
 
   // 포커스된 항목으로 스크롤
   useEffect(() => {

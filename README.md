@@ -34,7 +34,7 @@
 
 - 최대 6개 장소 저장
 - 카드 형태 UI (실시간 날씨 표시)
-- 즐겨찾기 이름 수정 (최대 30자)
+- 즐겨찾기 이름 수정 (최대 20자)
 - localStorage를 통한 영구 저장
 - 반응형 그리드 레이아웃 (1/2/3열)
 
@@ -57,6 +57,8 @@
 - 로딩 스피너 및 에러 핸들링
 - 위치 권한 거부 시 기본 위치 제공 (서울)
 - API 실패 시 재시도 UI
+- 페이지 전환 애니메이션 (framer-motion)
+- 긴 이름 말줄임 처리 및 툴팁
 
 ## 🛠 기술 스택
 
@@ -69,6 +71,7 @@
 - **TanStack Query (React Query)** - 서버 상태 관리
 - **Zustand** - 클라이언트 상태 관리
 - **Tailwind CSS 4** - 스타일링
+- **framer-motion** - 애니메이션
 
 ### APIs
 
@@ -149,7 +152,6 @@ src/
 │   ├── location/          # 위치 관련 로직
 │   │   ├── api.ts
 │   │   ├── types.ts
-│   │   ├── useGeocode.ts
 │   │   ├── useReverseGeocode.ts
 │   │   └── useKakaoSearch.ts
 │   └── weather/           # 날씨 관련 로직
@@ -173,8 +175,6 @@ src/
 ├── pages/                # 페이지 컴포넌트
 │   ├── Home/
 │   │   └── index.tsx     # 홈 페이지
-│   ├── PlaceDetail/
-│   │   └── index.tsx
 │   └── WeatherDetail/
 │       └── index.tsx     # 날씨 상세 페이지
 ├── shared/               # 공유 리소스
@@ -182,7 +182,8 @@ src/
 │   │   └── axios.ts      # Axios 인스턴스
 │   ├── constants/
 │   │   └── korea_districts.json  # 한국 행정구역 데이터
-│   ├── ui/               # 공유 UI 컴포넌트
+│   ├── ui/               # 공유 UI 컴포넌c트
+│   │   └── PageTransition.tsx  # 페이지 전환 애니메이션
 │   └── utils/            # 유틸리티 함수
 └── types/                # 타입 정의
     └── kakao.d.ts        # Kakao API 타입

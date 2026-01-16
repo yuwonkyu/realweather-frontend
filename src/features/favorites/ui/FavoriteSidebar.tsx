@@ -37,8 +37,8 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
       return;
     }
 
-    if (trimmedValue.length > 30) {
-      setError("이름은 30자 이하로 입력해주세요");
+    if (trimmedValue.length > 20) {
+      setError("이름은 20자 이하로 입력해주세요");
       return;
     }
 
@@ -163,7 +163,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
                               handleCancelEdit();
                             }
                           }}
-                          maxLength={30}
+                          maxLength={20}
                           className="w-full bg-zinc-700 text-white text-sm px-2 py-1 rounded border border-zinc-600 focus:outline-none focus:border-blue-500"
                           autoFocus
                         />
