@@ -90,6 +90,7 @@ export const WeatherDetail = () => {
     remove,
     add,
     placeName,
+    koreanAddress,
     currentWeather,
   ]);
 
@@ -142,13 +143,13 @@ export const WeatherDetail = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/")}
                 className={cn(
                   "flex items-center justify-center p-3 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors border border-gray-200",
                   sidebarOpen && "invisible"
                 )}
               >
-                <img src="/arrow-left.svg" alt="뒤로가기" className="w-5 h-5" />
+                <img src="/arrow-left.svg" alt="홈으로" className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setSidebarOpen(true)}
