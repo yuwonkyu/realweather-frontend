@@ -1,12 +1,16 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useWeather } from "@/entities/weather/useWeather";
 import { useForecast } from "@/entities/weather/useForecast";
 import { useFavoritesStore } from "@/features/favorites/model/favoritesStore";
 
 export const WeatherDetail = () => {
   const { lat, lon } = useParams<{ lat: string; lon: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { favorites, add, remove } = useFavoritesStore();
+
+  // URL 쿼리에서 장소명 가져오기 (없으면 API 응답의 name 사용)
+  const placeName = searchParams.get("name");
 
   const latitude = parseFloat(lat || "0");
   const longitude = parseFloat(lon || "0");
@@ -41,7 +45,7 @@ export const WeatherDetail = () => {
       }
       add({
         id: Date.now().toString(),
-        name: currentWeather?.name || "알 수 없음",
+        name: placeName || currentWeather?.name || "알 수 없음",
         lat: latitude,
         lon: longitude,
       });
@@ -90,7 +94,9 @@ export const WeatherDetail = () => {
           >
             <img src="/arrow-left.svg" alt="뒤로가기" className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold">{currentWeather.name}</h1>
+          <h1 className="text-2xl font-bold">
+            {placeName || currentWeather.name}
+          </h1>
           <button
             onClick={handleToggleFavorite}
             className="p-2 rounded-lg hover:bg-gray-200 transition-colors"

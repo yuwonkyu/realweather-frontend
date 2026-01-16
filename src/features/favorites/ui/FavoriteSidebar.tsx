@@ -58,7 +58,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
               <div className="space-y-1 mt-2">
                 {favorites.map((f) => (
                   <button
-                    key={f.name}
+                    key={f.id}
                     onClick={() => {
                       navigate(`/weather/${f.lat}/${f.lon}`);
                     }}
