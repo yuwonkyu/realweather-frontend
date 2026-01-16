@@ -51,7 +51,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
   return (
     <aside
       className={`fixed top-0 left-0 h-screen bg-zinc-900 text-white shadow-xl overflow-y-auto transition-all duration-300 ${
-        open ? "w-48" : "w-0"
+        open ? "w-80" : "w-0"
       } z-40`}
     >
       {/* 토글 버튼 - 사이드바 열렸을 때만 표시 */}
@@ -142,7 +142,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
                         </button>
                         <button
                           onClick={() => handleStartEdit(f.id, f.name)}
-                          className="p-2 rounded-md bg-zinc-800 hover:bg-zinc-700 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                          className="p-2 rounded-md bg-zinc-700 hover:bg-blue-600 text-gray-300 hover:text-white transition-colors"
                           aria-label="이름 수정"
                         >
                           <svg

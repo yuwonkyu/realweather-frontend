@@ -25,7 +25,7 @@ export const Layout = () => {
       <div
         className="min-h-screen transition-transform duration-300 w-screen"
         style={{
-          transform: sidebarOpen ? "translateX(192px)" : "translateX(0)",
+          transform: sidebarOpen ? "translateX(320px)" : "translateX(0)",
         }}
       >
         <Outlet context={{ coords, setCoords, sidebarOpen, setSidebarOpen }} />

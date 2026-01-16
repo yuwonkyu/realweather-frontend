@@ -1,13 +1,26 @@
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useSearchParams,
+  useOutletContext,
+} from "react-router-dom";
 import { useWeather } from "@/entities/weather/useWeather";
 import { useForecast } from "@/entities/weather/useForecast";
 import { useFavoritesStore } from "@/features/favorites/model/favoritesStore";
+
+type LayoutContext = {
+  coords: { lat: number; lon: number } | null;
+  setCoords: (coords: { lat: number; lon: number }) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+};
 
 export const WeatherDetail = () => {
   const { lat, lon } = useParams<{ lat: string; lon: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { favorites, add, remove } = useFavoritesStore();
+  const { sidebarOpen, setSidebarOpen } = useOutletContext<LayoutContext>();
 
   // URL 쿼리에서 장소명 가져오기 (없으면 API 응답의 name 사용)
   const placeName = searchParams.get("name");
@@ -88,12 +101,24 @@ export const WeatherDetail = () => {
       <div className="max-w-6xl mx-auto space-y-4">
         {/* 헤더 */}
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors"
-          >
-            <img src="/arrow-left.svg" alt="뒤로가기" className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate(-1)}
+              className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
+                sidebarOpen ? "invisible" : "visible"
+              }`}
+            >
+              <img src="/arrow-left.svg" alt="뒤로가기" className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
+                sidebarOpen ? "invisible" : "visible"
+              }`}
+            >
+              <img src="/favorite.svg" alt="메뉴" className="size-5" />
+            </button>
+          </div>
           <h1 className="text-2xl font-bold">
             {placeName || currentWeather.name}
           </h1>
