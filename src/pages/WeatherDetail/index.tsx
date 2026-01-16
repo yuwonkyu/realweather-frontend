@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { useWeather } from "@/entities/weather/useWeather";
 import { useForecast } from "@/entities/weather/useForecast";
+import { useReverseGeocode } from "@/entities/location/useReverseGeocode";
 import { useFavoritesStore } from "@/features/favorites/model/favoritesStore";
 
 type LayoutContext = {
@@ -32,6 +33,7 @@ export const WeatherDetail = () => {
     latitude,
     longitude
   );
+  const { address: koreanAddress } = useReverseGeocode(latitude, longitude);
   const { data: forecast, isLoading: forecastLoading } = useForecast(
     latitude,
     longitude
@@ -119,9 +121,14 @@ export const WeatherDetail = () => {
               <img src="/favorite.svg" alt="메뉴" className="size-5" />
             </button>
           </div>
-          <h1 className="text-2xl font-bold">
-            {placeName || currentWeather.name}
-          </h1>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">
+              {placeName || currentWeather.name}
+            </h1>
+            {koreanAddress && (
+              <p className="text-sm text-gray-500 mt-1">{koreanAddress}</p>
+            )}
+          </div>
           <button
             onClick={handleToggleFavorite}
             className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
