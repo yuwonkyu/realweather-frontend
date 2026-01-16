@@ -136,7 +136,6 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
             🏠 홈 - 현재위치
           </button>
 
-          {/* 즐겨찾기 섹션 */}
           <div className="mt-4">
             <div className="px-3 py-2 text-sm text-gray-400 font-medium">
               ⭐ 즐겨찾기
@@ -201,19 +200,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
                           className="p-2 rounded-md bg-zinc-700 hover:bg-blue-600 text-gray-300 hover:text-white transition-colors"
                           aria-label="이름 수정"
                         >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                            />
-                          </svg>
+                          <img src="/fix.svg" alt="수정" className="w-4 h-4" />
                         </button>
                       </div>
                     )}

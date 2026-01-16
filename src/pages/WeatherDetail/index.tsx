@@ -138,7 +138,6 @@ export const WeatherDetail = () => {
     <PageTransition>
       <div className="p-4 bg-gray-50 min-h-screen">
         <div className="max-w-6xl mx-auto space-y-4">
-          {/* 헤더 */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <button

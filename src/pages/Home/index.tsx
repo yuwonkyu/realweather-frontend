@@ -43,7 +43,6 @@ export const Home = () => {
               ? "위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요."
               : "위치 정보를 가져올 수 없습니다. 다시 시도해주세요."
           );
-          // 기본 위치 (서울)로 설정
           setCoords({ lat: 37.5665, lon: 126.978 });
         }
       );
@@ -98,7 +97,6 @@ export const Home = () => {
           />
         )}
 
-        {/* 상단: 햄버거 버튼 + 검색 박스 */}
         <div className="max-w-4xl mx-auto mb-2">
           <div className="flex items-center justify-between gap-4">
             <button

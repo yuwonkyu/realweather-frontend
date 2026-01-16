@@ -21,7 +21,6 @@ export const useReverseGeocode = (lat: number, lon: number) => {
 
     const geocoder = new window.kakao.maps.services.Geocoder();
 
-    // Promise로 감싸서 비동기 처리
     Promise.resolve().then(() => {
       setIsLoading(true);
 
@@ -32,7 +31,6 @@ export const useReverseGeocode = (lat: number, lon: number) => {
           if (status === window.kakao.maps.services.Status.OK) {
             if (result[0]) {
               const addr = result[0].address;
-              // 시/도 + 시/군/구 형식으로 표시
               const locationName = `${addr.region_1depth_name} ${addr.region_2depth_name}`;
               setAddress(locationName);
             }

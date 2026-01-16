@@ -25,7 +25,6 @@ const FavoriteCard = memo(
         onClick={() => onSelect(lat, lon, name)}
       >
         <div className="p-4">
-          {/* 헤더: 장소 이름과 삭제 버튼 */}
           <div className="flex justify-between items-start mb-3">
             <h3 className="text-lg font-semibold text-gray-800 truncate flex-1">
               {name}
@@ -54,14 +53,12 @@ const FavoriteCard = memo(
             </button>
           </div>
 
-          {/* 날씨 정보 */}
           {isLoading ? (
             <div className="flex justify-center items-center h-24">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             </div>
           ) : weather ? (
             <div className="space-y-3">
-              {/* 현재 온도와 날씨 아이콘 */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <img
@@ -75,12 +72,10 @@ const FavoriteCard = memo(
                 </div>
               </div>
 
-              {/* 날씨 설명 */}
               <div className="text-sm text-gray-600 capitalize">
                 {weather.weather[0].description}
               </div>
 
-              {/* 최저/최고 온도 */}
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center text-blue-600">
                   <svg
@@ -104,7 +99,6 @@ const FavoriteCard = memo(
                 </div>
               </div>
 
-              {/* 추가 정보 */}
               <div className="grid grid-cols-2 gap-2 text-xs text-gray-500 pt-2 border-t border-gray-100">
                 <div className="flex items-center">
                   <span className="mr-1">💧</span>

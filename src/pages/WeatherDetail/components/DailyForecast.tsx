@@ -36,7 +36,6 @@ export const DailyForecast = ({ forecasts }: DailyForecastProps) => {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                {/* 데스크톱: 막대 그래프 포함 */}
                 <div className="hidden md:flex items-center gap-2">
                   <p className="text-sm text-gray-500 w-10 text-right">
                     {Math.round(item.main.temp_min)}°
@@ -46,7 +45,6 @@ export const DailyForecast = ({ forecasts }: DailyForecastProps) => {
                     {Math.round(item.main.temp_max)}°
                   </p>
                 </div>
-                {/* 모바일: 간략한 텍스트 */}
                 <div className="md:hidden">
                   <p className="text-sm text-gray-700">
                     {Math.round(item.main.temp_min)}° /{" "}
