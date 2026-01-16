@@ -2,6 +2,8 @@
 
 실시간 날씨 정보를 제공하고 즐겨찾기 관리 기능을 갖춘 반응형 웹 애플리케이션입니다.
 
+🌐 **Live Demo**: [https://realweather-frontend.vercel.app/](https://realweather-frontend.vercel.app/)
+
 ## 📋 목차
 
 - [주요 기능](#-주요-기능)
@@ -10,6 +12,10 @@
 - [프로젝트 구조](#-프로젝트-구조)
 - [주요 기능 상세](#-주요-기능-상세)
 - [환경 변수](#-환경-변수)
+- [성능 최적화](#-성능-최적화)
+- [SEO 최적화](#-seo-최적화)
+- [문제 해결](#-문제-해결)
+- [트러블슈팅](#-트러블슈팅)
 
 ## ✨ 주요 기능
 
@@ -68,9 +74,10 @@
 - **TypeScript** - 타입 안정성
 - **Vite** - 빌드 도구
 - **React Router** - 라우팅
-- **TanStack Query (React Query)** - 서버 상태 관리
+- **TanStack Query (React Query)** - 서버 상태 관리 (캐싱 5분)
 - **Zustand** - 클라이언트 상태 관리
 - **Tailwind CSS 4** - 스타일링
+- **clsx + tailwind-merge** - 조건부 클래스 관리
 - **framer-motion** - 애니메이션
 
 ### APIs
@@ -115,7 +122,13 @@ VITE_OPENWEATHER_API_KEY=your_openweather_api_key
 VITE_KAKAO_API_KEY=your_kakao_javascript_key
 ```
 
-> **API 키 발급 방법:**
+> **⚠️ 보안 주의사항:**
+>
+> - `.env` 파일은 절대 GitHub에 커밋하지 마세요
+> - API 키는 공개 저장소에 노출되지 않도록 주의하세요
+> - 프로덕션 배포 시 환경 변수는 배포 플랫폼에서 설정하세요
+
+> **API 키 발급:**
 >
 > - OpenWeather API: https://openweathermap.org/api
 > - Kakao Maps API: https://developers.kakao.com/
@@ -166,25 +179,36 @@ src/
 │   │   └── ui/
 │   │       ├── FavoriteSidebar.tsx
 │   │       └── FavoritesList.tsx
-│   ├── map/              # 지도 관련
-│   │   └── ui/
-│   │       └── KakaoMap.tsx
 │   └── search/           # 검색 기능
 │       └── components/
 │           └── KakaoSearchBox.tsx
 ├── pages/                # 페이지 컴포넌트
 │   ├── Home/
-│   │   └── index.tsx     # 홈 페이지
+│   │   ├── index.tsx     # 홈 페이지
+│   │   └── components/   # 홈 페이지 컴포넌트
+│   │       ├── LocationErrorBanner.tsx
+│   │       ├── CurrentWeatherCard.tsx
+│   │       └── HourlyForecastSection.tsx
 │   └── WeatherDetail/
-│       └── index.tsx     # 날씨 상세 페이지
+│       ├── index.tsx     # 날씨 상세 페이지
+│       └── components/   # 상세 페이지 컴포넌트
+│           ├── CurrentWeather.tsx
+│           ├── HourlyForecast.tsx
+│           ├── DailyForecast.tsx
+│           ├── SunriseSunset.tsx
+│           ├── WeatherDetails.tsx
+│           └── PrecipitationInfo.tsx
 ├── shared/               # 공유 리소스
 │   ├── api/
 │   │   └── axios.ts      # Axios 인스턴스
 │   ├── constants/
 │   │   └── korea_districts.json  # 한국 행정구역 데이터
-│   ├── ui/               # 공유 UI 컴포넌c트
-│   │   └── PageTransition.tsx  # 페이지 전환 애니메이션
+│   ├── ui/               # 공유 UI 컴포넌트
+│   │   ├── PageTransition.tsx  # 페이지 전환 애니메이션
+│   │   ├── Loading.tsx         # 로딩 컴포넌트
+│   │   └── ErrorDisplay.tsx    # 에러 표시 컴포넌트
 │   └── utils/            # 유틸리티 함수
+│       └── cn.ts         # clsx + tailwind-merge
 └── types/                # 타입 정의
     └── kakao.d.ts        # Kakao API 타입
 ```
@@ -240,6 +264,12 @@ const { address } = useReverseGeocode(lat, lon);
 | `VITE_OPENWEATHER_API_KEY` | OpenWeather API 키  | ✅   |
 | `VITE_KAKAO_API_KEY`       | Kakao JavaScript 키 | ✅   |
 
+> **보안 팁:**
+>
+> - 프로덕션 환경에서는 환경 변수를 Vercel, Netlify 등 배포 플랫폼의 환경 변수 설정에서 관리하세요
+> - `.gitignore`에 `.env` 파일이 포함되어 있는지 확인하세요
+> - API 키가 노출된 경우 즉시 재발급하세요
+
 ## 📱 반응형 브레이크포인트
 
 - **Mobile**: < 768px
@@ -273,13 +303,73 @@ rm -rf node_modules pnpm-lock.yaml
 pnpm install
 ```
 
-## 📄 라이선스
+## ⚡ 성능 최적화
 
-MIT License
+### React Query 캐싱
 
-## 👨‍💻 개발자
+- **staleTime**: 5분 - 데이터를 5분간 fresh 상태로 유지
+- **gcTime**: 10분 - 사용하지 않는 데이터를 10분 후 가비지 컬렉션
+- **refetchOnWindowFocus**: false - 창 포커스 시 자동 갱신 비활성화
 
-리얼티쓰 프론트엔드 채용과제
+### 컴포넌트 최적화
+
+- **React.memo**: FavoriteCard 등 반복 렌더링되는 컴포넌트에 적용
+- **useCallback**: 이벤트 핸들러 메모이제이션
+- **useMemo**: 필터링/정렬 등 계산 비용이 큰 작업 최적화
+
+### 코드 분리
+
+- 페이지별 컴포넌트 분리로 코드 가독성 향상
+- 공통 UI 컴포넌트 재사용 (Loading, ErrorDisplay)
+- cn() 유틸리티로 조건부 className 관리
+
+### 번들 최적화
+
+- Vite의 코드 스플리팅 자동 적용
+- 트리 쉐이킹으로 미사용 코드 제거
+
+## 🔍 SEO 최적화
+
+### 메타 태그
+
+- **description**: 앱 설명 및 주요 기능 명시
+- **keywords**: 검색 키워드 최적화
+- **theme-color**: 브랜드 컬러 (#3b82f6)
+
+### Open Graph (소셜 미디어 공유)
+
+- og:title, og:description, og:image 설정
+- SNS 공유 시 미리보기 최적화
+
+### Twitter Card
+
+- Large Image 카드 형식
+- 트위터 공유 최적화
+
+### 기타
+
+- **Semantic HTML**: header, main, section 태그 사용
+- **lang 속성**: `<html lang="ko">` 한국어 명시
+- **파비콘**: favicon.ico 추가
+
+## � 트러블슈팅
+
+프로젝트 개발 과정에서 발생한 문제와 해결 방법은 다음 문서를 참고하세요:
+
+- **[SIDEBAR_IMPLEMENTATION.md](./SIDEBAR_IMPLEMENTATION.md)** - 사이드바 구현 및 드래그 기능 트러블슈팅
+- **[REFACTORING_OPTIMIZATION.md](./REFACTORING_OPTIMIZATION.md)** - 코드 리팩토링 및 성능 최적화 트러블슈팅
+
+주요 해결 사항:
+
+- 컴포넌트 분리 및 코드 가독성 개선 (50%+ 코드 감소)
+- TypeScript 타입 안정성 확보 (any 타입 제거)
+- React Query 캐싱 전략으로 API 호출 최적화
+- SEO 메타 태그 및 Open Graph 추가
+- 불필요한 코드 및 파일 제거
+
+## �📄 라이선스
+
+MIT License - 자유롭게 사용, 수정, 배포할 수 있습니다.
 
 ---
 
