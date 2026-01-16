@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useWeather } from "@/entities/weather/useWeather";
 import { useForecast } from "@/entities/weather/useForecast";
 import { useReverseGeocode } from "@/entities/location/useReverseGeocode";
@@ -17,19 +17,36 @@ export const Home = () => {
   const { coords, setCoords, sidebarOpen, setSidebarOpen } =
     useOutletContext<LayoutContext>();
   const navigate = useNavigate();
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!coords) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setCoords({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-        });
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setCoords({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+          });
+          setLocationError(null);
+        },
+        (error) => {
+          console.error("위치 정보 가져오기 실패:", error);
+          setLocationError(
+            error.code === error.PERMISSION_DENIED
+              ? "위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요."
+              : "위치 정보를 가져올 수 없습니다. 다시 시도해주세요."
+          );
+          // 기본 위치 (서울)로 설정
+          setCoords({ lat: 37.5665, lon: 126.978 });
+        }
+      );
     }
   }, [coords, setCoords]);
 
-  const { data, isLoading } = useWeather(coords?.lat || 0, coords?.lon || 0);
+  const { data, isLoading, error } = useWeather(
+    coords?.lat || 0,
+    coords?.lon || 0
+  );
   const { data: forecastData } = useForecast(
     coords?.lat || 0,
     coords?.lon || 0
@@ -43,27 +60,75 @@ export const Home = () => {
     navigate(`/weather/${lat}/${lon}?name=${encodeURIComponent(name)}`);
   };
 
+  const handleRetryLocation = () => {
+    setCoords(null);
+    setLocationError(null);
+  };
+
   if (!coords)
     return (
-      <div className="flex items-center justify-center h-screen">
-        위치 정보를 가져오는 중...
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p className="text-gray-600">위치 정보를 가져오는 중...</p>
       </div>
     );
+
   if (isLoading)
     return (
-      <div className="flex items-center justify-center h-screen">
-        로딩 중...
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p className="text-gray-600">날씨 정보를 불러오는 중...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex flex-col items-center justify-center h-screen gap-4 p-4">
+        <div className="text-red-500 text-5xl">⚠️</div>
+        <h2 className="text-xl font-bold text-gray-800">
+          날씨 정보를 불러올 수 없습니다
+        </h2>
+        <p className="text-gray-600 text-center">
+          네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          다시 시도
+        </button>
       </div>
     );
 
   return (
     <div className="p-4 bg-gray-50">
+      {/* 위치 권한 에러 메시지 */}
+      {locationError && (
+        <div className="max-w-4xl mx-auto mb-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+            <span className="text-yellow-600 text-xl">⚠️</span>
+            <div className="flex-1">
+              <p className="text-yellow-800 font-medium">{locationError}</p>
+              <p className="text-yellow-700 text-sm mt-1">
+                현재 서울의 날씨를 표시하고 있습니다.
+              </p>
+            </div>
+            <button
+              onClick={handleRetryLocation}
+              className="text-yellow-600 hover:text-yellow-800 font-medium text-sm"
+            >
+              재시도
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 상단: 햄버거 버튼 + 검색 박스 */}
       <div className="max-w-4xl mx-auto mb-2">
         <div className="flex items-center justify-between gap-4">
           <button
             onClick={() => setSidebarOpen(true)}
-            className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
+            className={`flex items-center justify-center p-3 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors border border-gray-200 ${
               sidebarOpen ? "invisible" : "visible"
             }`}
           >
@@ -113,7 +178,13 @@ export const Home = () => {
             </div>
           </div>
           <button
-            onClick={() => navigate(`/weather/${coords.lat}/${coords.lon}`)}
+            onClick={() =>
+              navigate(
+                `/weather/${coords.lat}/${coords.lon}?name=${encodeURIComponent(
+                  koreanAddress || data?.name || "현재 위치"
+                )}`
+              )
+            }
             className="mt-4 w-full sm:w-auto px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
             현재 위치 상세 날씨 보기

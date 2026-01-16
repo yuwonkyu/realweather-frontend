@@ -29,15 +29,17 @@ export const WeatherDetail = () => {
   const latitude = parseFloat(lat || "0");
   const longitude = parseFloat(lon || "0");
 
-  const { data: currentWeather, isLoading: weatherLoading } = useWeather(
-    latitude,
-    longitude
-  );
+  const {
+    data: currentWeather,
+    isLoading: weatherLoading,
+    error: weatherError,
+  } = useWeather(latitude, longitude);
   const { address: koreanAddress } = useReverseGeocode(latitude, longitude);
-  const { data: forecast, isLoading: forecastLoading } = useForecast(
-    latitude,
-    longitude
-  );
+  const {
+    data: forecast,
+    isLoading: forecastLoading,
+    error: forecastError,
+  } = useForecast(latitude, longitude);
 
   // 즐겨찾기 여부 확인
   const isFavorite = favorites.some(
@@ -69,16 +71,37 @@ export const WeatherDetail = () => {
 
   if (weatherLoading || forecastLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        로딩 중...
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p className="text-gray-600">날씨 정보를 불러오는 중...</p>
       </div>
     );
   }
 
-  if (!currentWeather || !forecast) {
+  if (weatherError || forecastError || !currentWeather || !forecast) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        날씨 정보를 불러올 수 없습니다.
+      <div className="flex flex-col items-center justify-center h-screen gap-4 p-4">
+        <div className="text-red-500 text-5xl">⚠️</div>
+        <h2 className="text-xl font-bold text-gray-800">
+          날씨 정보를 불러올 수 없습니다
+        </h2>
+        <p className="text-gray-600 text-center">
+          네트워크 연결을 확인하거나 잠시 후 다시 시도해주세요.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+          >
+            뒤로 가기
+          </button>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            다시 시도
+          </button>
+        </div>
       </div>
     );
   }
@@ -106,7 +129,7 @@ export const WeatherDetail = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate(-1)}
-              className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
+              className={`flex items-center justify-center p-3 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors border border-gray-200 ${
                 sidebarOpen ? "invisible" : "visible"
               }`}
             >
@@ -114,7 +137,7 @@ export const WeatherDetail = () => {
             </button>
             <button
               onClick={() => setSidebarOpen(true)}
-              className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
+              className={`flex items-center justify-center p-3 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors border border-gray-200 ${
                 sidebarOpen ? "invisible" : "visible"
               }`}
             >
