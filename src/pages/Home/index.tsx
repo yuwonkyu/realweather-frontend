@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { useWeather } from "@/entities/weather/useWeather";
 import { useForecast } from "@/entities/weather/useForecast";
+import { useReverseGeocode } from "@/entities/location/useReverseGeocode";
 import { KakaoSearchBox } from "@/features/search/components/KakaoSearchBox";
-import { KakaoMap } from "@/features/map/ui/KakaoMap";
+import { FavoritesList } from "@/features/favorites/ui/FavoritesList";
 import { useOutletContext, useNavigate } from "react-router-dom";
 
 type LayoutContext = {
@@ -33,9 +34,13 @@ export const Home = () => {
     coords?.lat || 0,
     coords?.lon || 0
   );
+  const { address: koreanAddress } = useReverseGeocode(
+    coords?.lat || 0,
+    coords?.lon || 0
+  );
 
-  const handleSearchSelect = (lat: number, lon: number) => {
-    navigate(`/weather/${lat}/${lon}`);
+  const handleSearchSelect = (lat: number, lon: number, name: string) => {
+    navigate(`/weather/${lat}/${lon}?name=${encodeURIComponent(name)}`);
   };
 
   if (!coords)
@@ -53,16 +58,22 @@ export const Home = () => {
 
   return (
     <div className="p-4 bg-gray-50">
-      {/* 햄버거 버튼 - 공간은 항상 유지, 닫혔을 때만 보임 */}
-      <div className="max-w-4xl mx-auto mb-4">
-        <button
-          onClick={() => setSidebarOpen(true)}
-          className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
-            sidebarOpen ? "invisible" : "visible"
-          }`}
-        >
-          <img src="/favorite.svg" alt="메뉴" className="size-5" />
-        </button>
+      {/* 상단: 햄버거 버튼 + 검색 박스 */}
+      <div className="max-w-4xl mx-auto mb-2">
+        <div className="flex items-center justify-between gap-4">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className={`flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition-colors ${
+              sidebarOpen ? "invisible" : "visible"
+            }`}
+          >
+            <img src="/favorite.svg" alt="메뉴" className="size-5" />
+          </button>
+
+          <div className="flex-1 max-w-md bg-white rounded-lg shadow p-3 border border-gray-200">
+            <KakaoSearchBox onSelect={handleSearchSelect} />
+          </div>
+        </div>
       </div>
       <div className="max-w-4xl mx-auto space-y-4">
         {/* 날씨 정보 박스 */}
@@ -81,7 +92,9 @@ export const Home = () => {
               </p>
 
               {/* 지역 이름 - 작게 */}
-              <p className="text-sm text-gray-500 mt-2">{data?.name}</p>
+              <p className="text-sm text-gray-500 mt-2">
+                {koreanAddress || data?.name}
+              </p>
 
               {/* 최저/최고 온도 */}
               <p className="text-sm text-gray-600 mt-1">
@@ -145,15 +158,8 @@ export const Home = () => {
           </div>
         )}
 
-        {/* 검색 박스 */}
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <KakaoSearchBox onSelect={handleSearchSelect} />
-        </div>
-
-        {/* 지도 박스 */}
-        <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-          <KakaoMap lat={coords.lat} lon={coords.lon} />
-        </div>
+        {/* 즐겨찾기 카드 */}
+        <FavoritesList onSelect={handleSearchSelect} />
       </div>
     </div>
   );
