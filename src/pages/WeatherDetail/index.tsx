@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
   useParams,
   useNavigate,
@@ -48,7 +49,7 @@ export const WeatherDetail = () => {
   );
 
   // 즐겨찾기 토글
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = useCallback(() => {
     if (isFavorite) {
       const favorite = favorites.find(
         (fav) => fav.lat === latitude && fav.lon === longitude
@@ -68,7 +69,7 @@ export const WeatherDetail = () => {
         lon: longitude,
       });
     }
-  };
+  }, [isFavorite, favorites, latitude, longitude, remove, add, placeName, currentWeather]);
 
   if (weatherLoading || forecastLoading) {
     return (

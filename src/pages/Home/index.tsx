@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useWeather } from "@/entities/weather/useWeather";
 import { useForecast } from "@/entities/weather/useForecast";
 import { useReverseGeocode } from "@/entities/location/useReverseGeocode";
@@ -57,14 +57,17 @@ export const Home = () => {
     coords?.lon || 0
   );
 
-  const handleSearchSelect = (lat: number, lon: number, name: string) => {
-    navigate(`/weather/${lat}/${lon}?name=${encodeURIComponent(name)}`);
-  };
+  const handleSearchSelect = useCallback(
+    (lat: number, lon: number, name: string) => {
+      navigate(`/weather/${lat}/${lon}?name=${encodeURIComponent(name)}`);
+    },
+    [navigate]
+  );
 
-  const handleRetryLocation = () => {
+  const handleRetryLocation = useCallback(() => {
     setCoords(null);
     setLocationError(null);
-  };
+  }, [setCoords]);
 
   if (!coords)
     return (

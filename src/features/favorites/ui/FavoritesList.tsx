@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useFavoritesStore } from "./../model/favoritesStore";
 import { useWeather } from "../../../entities/weather/useWeather";
 
@@ -14,7 +15,7 @@ interface FavoriteCardProps {
   onRemove: (id: string) => void;
 }
 
-const FavoriteCard = ({
+const FavoriteCard = memo(({
   id,
   name,
   lat,
@@ -129,7 +130,7 @@ const FavoriteCard = ({
       </div>
     </div>
   );
-};
+});
 
 export const FavoritesList = ({ onSelect }: Props) => {
   const { favorites, remove } = useFavoritesStore();
