@@ -1,6 +1,6 @@
 import { useFavoritesStore } from "../model/favoritesStore";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface Props {
   open: boolean;
@@ -15,6 +15,12 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [error, setError] = useState("");
+
+  // 드래그 관련 상태
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const sidebarRef = useRef<HTMLElement>(null);
 
   const handleStartEdit = (id: string, currentName: string) => {
     setEditingId(id);
@@ -48,11 +54,60 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
     setError("");
   };
 
+  // 드래그 시작
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!open) return;
+    setIsDragging(true);
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    setDragStartX(clientX);
+    setDragOffset(0);
+  };
+
+  // 드래그 중
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const offset = clientX - dragStartX;
+
+    // 왼쪽으로만 드래그 가능 (음수 값만)
+    if (offset < 0) {
+      setDragOffset(offset);
+    }
+  };
+
+  // 드래그 종료
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    // 100px 이상 왼쪽으로 드래그하면 닫기
+    if (dragOffset < -100) {
+      setOpen(false);
+    }
+
+    setDragOffset(0);
+  };
+
   return (
     <aside
+      ref={sidebarRef}
+      onMouseDown={handleDragStart}
+      onMouseMove={handleDragMove}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+      onTouchStart={handleDragStart}
+      onTouchMove={handleDragMove}
+      onTouchEnd={handleDragEnd}
       className={`fixed top-0 left-0 h-screen bg-zinc-900 text-white shadow-xl overflow-y-auto transition-all duration-300 ${
         open ? "w-80" : "w-0"
-      } z-40`}
+      } z-40 ${isDragging ? "transition-none" : ""}`}
+      style={{
+        transform:
+          isDragging && dragOffset < 0
+            ? `translateX(${dragOffset}px)`
+            : undefined,
+        cursor: isDragging ? "grabbing" : "grab",
+      }}
     >
       {/* 토글 버튼 - 사이드바 열렸을 때만 표시 */}
       {open && (
