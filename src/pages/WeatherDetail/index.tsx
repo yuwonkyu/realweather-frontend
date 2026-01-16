@@ -69,7 +69,16 @@ export const WeatherDetail = () => {
         lon: longitude,
       });
     }
-  }, [isFavorite, favorites, latitude, longitude, remove, add, placeName, currentWeather]);
+  }, [
+    isFavorite,
+    favorites,
+    latitude,
+    longitude,
+    remove,
+    add,
+    placeName,
+    currentWeather,
+  ]);
 
   if (weatherLoading || forecastLoading) {
     return (

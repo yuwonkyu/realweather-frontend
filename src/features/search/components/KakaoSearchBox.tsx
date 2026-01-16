@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useKakaoSearch } from "@/entities/location/useKakaoSearch";
 import koreaDistricts from "@/shared/constants/korea_districts.json";
 
@@ -63,7 +63,7 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
   };
 
   // 행정구역 선택 시 카카오 API로 좌표 검색
-  const handleAdminRegionSelect = async (
+  const handleAdminRegionSelect = (
     region: (typeof filteredAdminRegions)[0]
   ) => {
     const searchQuery = region.fullName.replace(/-/g, " ");
@@ -75,9 +75,16 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
   useEffect(() => {
     if (waitingForAdminRegion && results.length > 0) {
       const first = results[0];
-      onSelect(parseFloat(first.y), parseFloat(first.x), waitingForAdminRegion);
-      setKeyword("");
-      setWaitingForAdminRegion(null);
+      // 비동기로 처리하여 cascading render 방지
+      Promise.resolve().then(() => {
+        onSelect(
+          parseFloat(first.y),
+          parseFloat(first.x),
+          waitingForAdminRegion
+        );
+        setKeyword("");
+        setWaitingForAdminRegion(null);
+      });
     }
   }, [results, waitingForAdminRegion, onSelect]);
 
@@ -144,11 +151,6 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
     }
   };
 
-  // 검색어 변경 시 포커스 초기화
-  useEffect(() => {
-    setFocusedIndex(-1);
-  }, [keyword]);
-
   // 포커스된 항목으로 스크롤
   useEffect(() => {
     if (focusedIndex >= 0) {
@@ -167,6 +169,7 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
           onChange={(e) => {
             setKeyword(e.target.value);
             search(e.target.value);
+            setFocusedIndex(-1); // 검색어 변경 시 포커스 초기화
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -213,10 +216,7 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
                   : "bg-blue-50/30 hover:bg-blue-50"
               }`}
             >
-              <div className="font-medium text-blue-700 flex items-center gap-2">
-                <span>🏙️</span>
-                {city.name}
-              </div>
+              <div className="font-medium text-blue-700">{city.name}</div>
               <div className="text-sm text-gray-500">주요 도시 · 전체 날씨</div>
             </li>
           ))}
@@ -236,8 +236,7 @@ export const KakaoSearchBox = ({ onSelect }: Props) => {
                     : "bg-green-50/30 hover:bg-green-50"
                 }`}
               >
-                <div className="font-medium text-green-700 flex items-center gap-2">
-                  <span>📍</span>
+                <div className="font-medium text-green-700">
                   {region.displayName}
                 </div>
                 <div className="text-sm text-gray-500">
