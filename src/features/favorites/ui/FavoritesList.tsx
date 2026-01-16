@@ -2,7 +2,7 @@ import { useFavoritesStore } from "./../model/favoritesStore";
 import { useWeather } from "../../../entities/weather/useWeather";
 
 interface Props {
-  onSelect: (lat: number, lon: number) => void;
+  onSelect: (lat: number, lon: number, name: string) => void;
 }
 
 interface FavoriteCardProps {
@@ -10,7 +10,7 @@ interface FavoriteCardProps {
   name: string;
   lat: number;
   lon: number;
-  onSelect: (lat: number, lon: number) => void;
+  onSelect: (lat: number, lon: number, name: string) => void;
   onRemove: (id: string) => void;
 }
 
@@ -27,7 +27,7 @@ const FavoriteCard = ({
   return (
     <div
       className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden cursor-pointer"
-      onClick={() => onSelect(lat, lon)}
+      onClick={() => onSelect(lat, lon, name)}
     >
       <div className="p-4">
         {/* 헤더: 장소 이름과 삭제 버튼 */}
