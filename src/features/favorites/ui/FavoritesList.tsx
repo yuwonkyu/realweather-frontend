@@ -37,19 +37,7 @@ const FavoriteCard = memo(
               className="text-gray-400 hover:text-red-500 transition-colors p-1"
               aria-label="삭제"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <img src="/cancel.svg" alt="삭제" className="size-5" />
             </button>
           </div>
 
@@ -78,23 +66,11 @@ const FavoriteCard = memo(
 
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center text-blue-600">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
-                  </svg>
+                  <img src="/down.svg" alt="최저" className="w-4 h-4 mr-1" />
                   <span>최저: {Math.round(weather.main.temp_min)}°</span>
                 </div>
                 <div className="flex items-center text-red-600">
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
-                  </svg>
+                  <img src="/up.svg" alt="최고" className="w-4 h-4 mr-1" />
                   <span>최고: {Math.round(weather.main.temp_max)}°</span>
                 </div>
               </div>
