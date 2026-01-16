@@ -1,5 +1,6 @@
 import { useFavoritesStore } from "../model/favoritesStore";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 interface Props {
   open: boolean;
@@ -8,9 +9,44 @@ interface Props {
 }
 
 export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
-  const { favorites } = useFavoritesStore();
+  const { favorites, rename } = useFavoritesStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [error, setError] = useState("");
+
+  const handleStartEdit = (id: string, currentName: string) => {
+    setEditingId(id);
+    setEditValue(currentName);
+    setError("");
+  };
+
+  const handleSaveEdit = (id: string) => {
+    const trimmedValue = editValue.trim();
+
+    // 입력 검증
+    if (!trimmedValue) {
+      setError("이름을 입력해주세요");
+      return;
+    }
+
+    if (trimmedValue.length > 30) {
+      setError("이름은 30자 이하로 입력해주세요");
+      return;
+    }
+
+    rename(id, trimmedValue);
+    setEditingId(null);
+    setEditValue("");
+    setError("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditValue("");
+    setError("");
+  };
 
   return (
     <aside
@@ -57,15 +93,75 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
             ) : (
               <div className="space-y-1 mt-2">
                 {favorites.map((f) => (
-                  <button
-                    key={f.id}
-                    onClick={() => {
-                      navigate(`/weather/${f.lat}/${f.lon}`);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 cursor-pointer transition-colors text-sm"
-                  >
-                    📍 {f.name}
-                  </button>
+                  <div key={f.id} className="relative group">
+                    {editingId === f.id ? (
+                      // 편집 모드
+                      <div className="px-3 py-2 bg-zinc-800 rounded-md">
+                        <input
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              handleSaveEdit(f.id);
+                            } else if (e.key === "Escape") {
+                              handleCancelEdit();
+                            }
+                          }}
+                          className="w-full bg-zinc-700 text-white text-sm px-2 py-1 rounded border border-zinc-600 focus:outline-none focus:border-blue-500"
+                          autoFocus
+                        />
+                        {error && (
+                          <p className="text-xs text-red-400 mt-1">{error}</p>
+                        )}
+                        <div className="flex gap-1 mt-2">
+                          <button
+                            onClick={() => handleSaveEdit(f.id)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-2 py-1 rounded transition-colors"
+                          >
+                            저장
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="flex-1 bg-zinc-600 hover:bg-zinc-500 text-white text-xs px-2 py-1 rounded transition-colors"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // 일반 모드
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => {
+                            navigate(`/weather/${f.lat}/${f.lon}`);
+                          }}
+                          className="flex-1 text-left px-3 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 cursor-pointer transition-colors text-sm"
+                        >
+                          📍 {f.name}
+                        </button>
+                        <button
+                          onClick={() => handleStartEdit(f.id, f.name)}
+                          className="p-2 rounded-md bg-zinc-800 hover:bg-zinc-700 text-gray-400 hover:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                          aria-label="이름 수정"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
