@@ -71,6 +71,7 @@ export const WeatherDetail = () => {
       }
       const favoriteName = (
         placeName ||
+        koreanAddress ||
         currentWeather?.name ||
         "알 수 없음"
       ).slice(0, 20);
@@ -162,11 +163,11 @@ export const WeatherDetail = () => {
             <div className="text-center flex-1 px-2 min-w-0">
               <h1
                 className="text-2xl font-bold truncate cursor-default"
-                title={placeName || currentWeather.name}
+                title={placeName || koreanAddress || currentWeather.name}
               >
-                {placeName || currentWeather.name}
+                {placeName || koreanAddress || currentWeather.name}
               </h1>
-              {koreanAddress && (
+              {koreanAddress && koreanAddress !== placeName && (
                 <p
                   className="text-sm text-gray-500 mt-1 truncate"
                   title={koreanAddress}

@@ -189,7 +189,7 @@ export const FavoriteSidebar = ({ open, setOpen, onResetHome }: Props) => {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => {
-                            navigate(`/weather/${f.lat}/${f.lon}`);
+                            navigate(`/weather/${f.lat}/${f.lon}?name=${encodeURIComponent(f.name)}`);
                           }}
                           className="flex-1 text-left px-3 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 cursor-pointer transition-colors text-sm"
                         >

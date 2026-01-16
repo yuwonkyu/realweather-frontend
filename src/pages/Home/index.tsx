@@ -119,14 +119,14 @@ export const Home = () => {
           <CurrentWeatherCard
             temp={data?.main.temp || 0}
             description={data?.weather[0].description || ""}
-            location={koreanAddress || data?.name || ""}
+            location={koreanAddress || "현재 위치"}
             tempMin={data?.main.temp_min || 0}
             tempMax={data?.main.temp_max || 0}
             icon={data?.weather[0].icon || ""}
             onDetailClick={() =>
               navigate(
                 `/weather/${coords.lat}/${coords.lon}?name=${encodeURIComponent(
-                  koreanAddress || data?.name || "현재 위치"
+                  koreanAddress || "현재 위치"
                 )}`
               )
             }
