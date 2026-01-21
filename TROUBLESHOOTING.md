@@ -54,21 +54,6 @@ Tailwind CSS 4.x에서는 `@tailwind` 디렉티브가 deprecated되어 작동하
 - 모든 Tailwind 유틸리티 클래스가 정상 작동
 - 한 줄로 모든 Tailwind 기능 로드
 
-### 💡 교훈
-
-1. **메이저 버전 업그레이드 시 Breaking Changes 확인 필수**
-   - 공식 문서의 [Upgrade Guide](https://tailwindcss.com/docs/upgrade-guide) 숙지
-   - CHANGELOG 확인
-
-2. **CSS 문제 우선 디버깅**
-   - 컴포넌트 로직보다 먼저 CSS가 적용되는지 확인
-   - 개발자 도구 → Computed Styles 확인
-   - 간단한 인라인 스타일로 테스트
-
-3. **시각적 피드백 없을 때 근본 원인 추적**
-   - UI가 보이지 않을 때는 CSS/빌드 설정 문제일 가능성이 높음
-   - 컴포넌트 구조는 올바르나 스타일이 적용되지 않는 경우 설정 파일 확인
-
 ---
 
 ## 2. Kakao Map SDK + TypeScript 타입 충돌
@@ -144,28 +129,6 @@ const search = (keyword: string) => {
 };
 ```
 
-### 💡 핵심 포인트
-
-1. **전역 타입 확장**
-   - `declare global`로 Window 인터페이스 확장
-   - 실제 API 구조에 맞게 타입 정의
-   - `export {}`로 모듈로 만들기 (필수)
-
-2. **런타임 체크**
-   - `window.kakao` 존재 여부 확인
-   - SDK 로딩 전/후 상태 체크
-
-3. **Promise 기반 로딩**
-   - SDK 로딩을 Promise로 감싸서 async/await 사용 가능
-   - 중복 로딩 방지 (이미 로드된 경우 즉시 반환)
-
-### 🎯 장점
-
-- ✅ TypeScript 타입 체크 통과
-- ✅ IDE 자동완성 지원
-- ✅ 빌드 오류 없이 배포 가능
-- ✅ 타입 안전성 확보
-
 ---
 
 ## 3. Vercel 배포 환경 빌드 오류
@@ -217,41 +180,6 @@ if (!window.kakao || !keyword) return;
    - `VITE_KAKAO_API_KEY`
 3. Production, Preview, Development 모두 체크
 4. 재배포 (GitHub push 또는 `vercel --prod`)
-
-### 💡 핵심 포인트
-
-1. **SSR 환경 분기 처리**
-
-   ```typescript
-   if (typeof window === "undefined") {
-     // Node.js 환경 (빌드 타임)
-     return;
-   }
-   // 브라우저 환경 (런타임)
-   ```
-
-2. **환경 변수 검증**
-
-   ```typescript
-   const apiKey = import.meta.env.VITE_KAKAO_API_KEY;
-   if (!apiKey) {
-     console.error("API Key is missing!");
-     return;
-   }
-   ```
-
-3. **에러 핸들링**
-   - SDK 로드 실패 시 명확한 에러 메시지
-   - 사용자에게 에러 상태 표시
-   - Sentry 등 모니터링 도구 연동 권장
-
-### 🎯 배포 체크리스트
-
-- [x] `typeof window !== "undefined"` 체크 추가
-- [x] Vercel 환경 변수 설정 완료
-- [x] SDK 로딩 에러 핸들링
-- [x] 빌드 성공 확인
-- [x] 배포 후 실제 동작 테스트
 
 ---
 
