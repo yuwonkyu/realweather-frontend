@@ -352,20 +352,41 @@ pnpm install
 - **lang 속성**: `<html lang="ko">` 한국어 명시
 - **파비콘**: favicon.ico 추가
 
-## � 트러블슈팅
+## 📊 트러블슈팅
 
-프로젝트 개발 과정에서 발생한 문제와 해결 방법은 다음 문서를 참고하세요:
+프로젝트 개발 과정에서 발생한 문제와 해결 방법은 **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)**를 참고하세요.
 
-- **[SIDEBAR_IMPLEMENTATION.md](./SIDEBAR_IMPLEMENTATION.md)** - 사이드바 구현 및 드래그 기능 트러블슈팅
-- **[REFACTORING_OPTIMIZATION.md](./REFACTORING_OPTIMIZATION.md)** - 코드 리팩토링 및 성능 최적화 트러블슈팅
+### 주요 해결 사항
 
-주요 해결 사항:
+#### 1. Tailwind CSS 4.x 마이그레이션
+
+- `@tailwind` 디렉티브 → `@import "tailwindcss"` 변경
+- 모든 스타일 정상 작동
+
+#### 2. Kakao Map SDK + TypeScript 타입 충돌
+
+- 전역 타입 선언 파일(`kakao.d.ts`) 생성
+- Window 인터페이스 확장으로 타입 안정성 확보
+- 빌드 오류 해결
+
+#### 3. Vercel 배포 환경 빌드 오류
+
+- 브라우저 환경 분기 처리 (`typeof window !== "undefined"`)
+- Vercel 환경 변수 설정
+- SSR 환경에서 안정적인 SDK 로딩
+
+#### 4. 사이드바 레이아웃 구현
+
+- Fixed 사이드바 + 동적 마진으로 겹침 방지
+- 픽셀 단위 일치 (`w-64` = `ml-64`)
+- 레이아웃 책임 분리 (Layout ↔ Page)
+
+### 기타 최적화
 
 - 컴포넌트 분리 및 코드 가독성 개선 (50%+ 코드 감소)
 - TypeScript 타입 안정성 확보 (any 타입 제거)
 - React Query 캐싱 전략으로 API 호출 최적화
 - SEO 메타 태그 및 Open Graph 추가
-- 불필요한 코드 및 파일 제거
 
 ## �📄 라이선스
 
